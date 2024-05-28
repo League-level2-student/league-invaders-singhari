@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
@@ -13,7 +15,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     int fntx = 66;
     int fnty = 115;
     Timer frameDraw;
+    Timer alienSpawn;
     RocketShip rocket = new RocketShip(250, 700, 50, 50);
+    ObjectManager objMan = new ObjectManager(rocket);
+    public static BufferedImage image;
+    public static boolean needImage = true;
+    public static boolean gotImage = false;	
     
     
 	public GamePanel() {
@@ -23,12 +30,21 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 	    frameDraw.start();
 	}
 	
+	void startGame() {
+		alienSpawn = new Timer(1000, objMan);
+	    alienSpawn.start();
+	}
+	
     void updateMenuState() {
     	
     }
     void updateGameState() {  
-    	
-    	
+    	if(!rocket.isActive) {
+    		currentState = END;
+    	}
+    	else {
+    		objMan.update();
+    	}
     }
     void updateEndState()  { 
     	
@@ -46,9 +62,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     	
     }
     void drawGameState(Graphics g) {
-    	g.setColor(Color.BLACK);
-    	g.fillRect(0, 0, LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
-    	rocket.draw(g);
+    	if (needImage) {
+    	    loadImage ("space.png");
+    	}
+    	if (gotImage) {
+    		g.drawImage(image, 0, 0, 500, 800, null);
+    	}
+    	//g.setColor(Color.BLACK);
+    	//g.fillRect(0, 0, LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
+    	objMan.draw(g);
     //	g.setFont(titleFont);
     //	g.setColor(Color.YELLOW);
 //    	g.drawString("League Invaders", fntx, fnty);
@@ -65,6 +87,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     	g.setFont(instructionFont);
     	g.drawString("You killed " + " enemies.", fntx+75, fnty+90);
     	g.drawString("Press ENTER to restart", fntx+45, fnty+150);
+    }
+    
+    void loadImage(String imageFile) {
+        if (needImage) {
+            try {
+                image = ImageIO.read(this.getClass().getResourceAsStream(imageFile));
+    	    gotImage = true;
+            } catch (Exception e) {
+                
+            }
+            needImage = false;
+        }
     }
     
 	@Override
@@ -106,7 +140,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 		    if (currentState == END) {
 		        currentState = MENU;
 		    } else {
-		        currentState++;
+		    	if(currentState == MENU) {
+		    		currentState++;
+		    		startGame();
+		    	}
+		    	else {
+		    		currentState++;
+		    		alienSpawn.stop();
+		    	}
 		    }
 		}
 		if (e.getKeyCode()==KeyEvent.VK_UP) {
@@ -132,6 +173,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 		    if(!(rocket.x < 0)) {
 		    	rocket.left();
 		    }
+		}
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			if(currentState == GAME) {
+				objMan.addProjectiles(rocket.getProjectile());
+			}
 		}
 	}
 

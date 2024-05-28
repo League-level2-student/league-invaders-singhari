@@ -1,8 +1,9 @@
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 
-public class ObjectManager {
+public class ObjectManager implements ActionListener{
 	RocketShip rocket;
 	ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
 	ArrayList<Alien> aliens = new ArrayList<Alien>();
@@ -13,7 +14,7 @@ public class ObjectManager {
 	void addProjectiles(Projectile pro) {
 		projectiles.add(pro);
 	}
-	void addAliens(Alien alien) {
+	void addAliens() {
 		aliens.add(new Alien(random.nextInt(LeagueInvaders.WIDTH),0,50,50));
 	}
 	void update() {
@@ -29,6 +30,8 @@ public class ObjectManager {
 				pro.isActive = false;
 			}
 		}
+		checkCollision();
+		purgeObjects();
 	}
 	void draw(Graphics g) {
 		rocket.draw(g);
@@ -50,5 +53,29 @@ public class ObjectManager {
 				projectiles.remove(i);
 			}
 		}
+	}
+	
+	void checkCollision() {
+		for(Alien ali : aliens) {
+			if(rocket.collisionBox.intersects(ali.collisionBox)) {
+				rocket.isActive = false;
+				ali.isActive = false;
+			}
+			else {
+				for(Projectile pro : projectiles) {
+					if(pro.collisionBox.intersects(ali.collisionBox)) {
+						pro.isActive = false;
+						ali.isActive = false;
+					}
+				}
+			}
+	
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		addAliens();
 	}
 }
