@@ -85,7 +85,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     	g.setColor(Color.BLACK);
     	g.drawString("You lost", fntx+20, fnty);
     	g.setFont(instructionFont);
-    	g.drawString("You killed " + " enemies.", fntx+75, fnty+90);
+    	g.drawString("You killed " + objMan.getScore() + " enemies.", fntx+75, fnty+90);
     	g.drawString("Press ENTER to restart", fntx+45, fnty+150);
     }
     
@@ -123,7 +123,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 		}else if(currentState == END){
 		    updateEndState();
 		}
-		System.out.println("action");
+		//System.out.println("action");
 		repaint();
 	}
 
@@ -139,6 +139,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 		if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (currentState == END) {
 		        currentState = MENU;
+		        rocket = new RocketShip(250, 700, 50, 50);
+		        objMan = new ObjectManager(rocket);
 		    } else {
 		    	if(currentState == MENU) {
 		    		currentState++;
@@ -151,25 +153,25 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 		    }
 		}
 		if (e.getKeyCode()==KeyEvent.VK_UP) {
-		    System.out.println("UP");
+		   // System.out.println("UP");
 		    if(!(rocket.y < 0)) {
 		    	rocket.up();
 		    }
 		}
 		if (e.getKeyCode()==KeyEvent.VK_DOWN) {
-		    System.out.println("DOWN");
+		    //System.out.println("DOWN");
 		    if(!(rocket.y > HEIGHT)) {
 		    	rocket.down();
 		    }
 		}
 		if (e.getKeyCode()==KeyEvent.VK_RIGHT) {
-		    System.out.println("RIGHT");
+		    //System.out.println("RIGHT");
 		   // if((rocket.x < WIDTH)) {
 		    	rocket.right();
 		    
 		}
 		if (e.getKeyCode()==KeyEvent.VK_LEFT) {
-		    System.out.println("LEFT");
+		    //System.out.println("LEFT");
 		    if(!(rocket.x < 0)) {
 		    	rocket.left();
 		    }
